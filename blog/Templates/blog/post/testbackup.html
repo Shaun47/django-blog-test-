@@ -1,0 +1,51 @@
+{% extends "blog/base.html" %}
+
+{% block title %} {{ post.title }} {% endblock %}
+
+{% block content %}
+<h1>{{ post.title }}</h1>
+<p class="date">
+    Published {{ post.publish }} by {{ post.author }}
+</p>
+
+{{post.body | linebreaks}}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    post = get_object_or_404(Post, slug=post,
+                             status='published',
+                             publish_year=year,
+                             publish_month=month,
+                             publish_day=day
+                             )
+    return render(request, 'blog/post/detail.html',{'post':post})
+
+
+
+def post_list(request):
+    object_list = Post.published.all()
+    paginator = Paginator(object_list, 3)
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    return render(request, 'blog/post/list.html', {
+        'page': page,
+        'posts': posts
+    })
